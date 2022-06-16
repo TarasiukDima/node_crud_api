@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "nodemon ./src/index.ts",
+    "start": "nodemon",
     "build": "webpack --env production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.0.0",
+    "@types/uuid": "^8.3.4",
     "prettier": "^2.7.1",
     "ts-loader": "^9.3.0",
     "ts-node": "^10.8.1",
