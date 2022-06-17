@@ -40,7 +40,7 @@ class AppData implements IAppData {
     return newUser;
   }
 
-  apiDeleteUser = (id: string): null | 'ok' => {
+  deleteUser = (id: string): null | 'ok' => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       this.users = [
@@ -52,7 +52,7 @@ class AppData implements IAppData {
     return null;
   }
 
-  apiUpdateUser = (id: string, options: IUserData): IUser | null => {
+  updateUser = (id: string, options: IUserData): IUser | null => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       this.users = [
