@@ -1,25 +1,43 @@
 import { ServerResponse } from 'http';
 import { STATUS_CODES_APP } from '../settings.js';
 
-
+export const SERVER_ERROR_MESSAGE = 'Server error!';
 export const NOT_FOUND_MESSAGE = 'Not Founded!';
+export const INVALID_METHOD_MESSAGE = 'Invalid method!';
+export const USER_DELETED_MESSAGE = 'User deleted!';
 export const INVALID_REQUEST_MESSAGE = 'Invalid request!';
-export const INVALID_BODY_REQUEST_MESSAGE = 'Invalid request. Body does not contain required fields';
+export const INVALID_BODY_REQUEST_MESSAGE =
+  'Invalid request. Body does not contain required fields';
 
-export const getStringBodyAnswer = (body: object): string => JSON.stringify(body);
+export const getNotFoundUserMessage = (id: string) => `User id-(${id}) not founded!`;
+export const getInvalidUserMessage = (id: string) => `User id-(${id}) is invalid!`;
 
-export const getErrorMessage = (message: string): string => {
-  return getStringBodyAnswer({
-    message,
-    status: STATUS_CODES_APP.bad,
-  });
+export const SERVER_ERROR_BODY = {
+  message: SERVER_ERROR_MESSAGE,
+  status: STATUS_CODES_APP.serverError,
 };
 
-export const sendNotFoundMessage = (res: ServerResponse, message: string = NOT_FOUND_MESSAGE) => {
-  const bodyAnswer = getErrorMessage(message);
+export const getStringBodyAnswer = (body: object): string | null => {
+  let strForBody: string | null;
+  try {
+    strForBody = JSON.stringify(body);
+  } catch (_) {
+    strForBody = null;
+  }
 
-  res.statusCode = STATUS_CODES_APP.bad;
-  res.end(bodyAnswer);
+  return strForBody;
+};
+
+export const sendBody = (res: ServerResponse, status: number, body: object) => {
+  const bodyAnswer = getStringBodyAnswer(body);
+
+  if (bodyAnswer) {
+    res.statusCode = status;
+    res.end(bodyAnswer);
+    return;
+  }
+
+  sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
 };
 
 export const sendErrorMessage = (
@@ -27,22 +45,5 @@ export const sendErrorMessage = (
   status: number,
   message: string = INVALID_REQUEST_MESSAGE
 ) => {
-  const bodyAnswer = getStringBodyAnswer({
-    message,
-    status,
-  });
-
-  res.statusCode = status;
-  res.end(bodyAnswer);
-};
-
-export const sendBody = (
-  res: ServerResponse,
-  status: number,
-  body: object
-) => {
-  const bodyAnswer = getStringBodyAnswer(body);
-
-  res.statusCode = status;
-  res.end(bodyAnswer);
+  sendBody(res, status, { message, status });
 };

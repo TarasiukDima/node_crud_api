@@ -7,6 +7,7 @@ export enum STATUS_CODES_APP {
   delete = 204,
   invalid = 400,
   bad = 404,
+  serverError = 500,
 }
 
 export const keysUserBody: Array<[string, string]> = [

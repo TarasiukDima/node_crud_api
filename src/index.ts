@@ -1,15 +1,15 @@
 import { createServer } from 'http';
-import { processingRequest } from './routes.js';
+import { processingRequest } from './routes/routes.js';
 import 'dotenv/config';
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT;
 
 const server = createServer((req, res) => {
   processingRequest(req, res);
 });
 
 server.listen(PORT, () => {
-  console.log('Start listen');
+  console.log('Started listening');
 });
 
 server.on('error', (error) => {
