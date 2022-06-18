@@ -16,11 +16,11 @@ class AppData implements IAppData {
     return this.users.findIndex((user: IUser) => user.id === id);
   };
 
-  getUsers = (): Array<IUser> => {
+  getUsers = async (): Promise<Array<IUser>> => {
     return this.users;
   };
 
-  getUser = (id: string): IUser | null => {
+  getUser = async (id: string): Promise<IUser | null> => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       return this.users[needUserIndex];
@@ -28,7 +28,7 @@ class AppData implements IAppData {
     return null;
   };
 
-  createUser = (options: IUserData): IUser => {
+  createUser = async (options: IUserData): Promise<IUser> => {
     const newUser = {
       id: uuidv4(),
       ...options,
@@ -39,7 +39,7 @@ class AppData implements IAppData {
     return newUser;
   };
 
-  deleteUser = (id: string): boolean => {
+  deleteUser = async (id: string): Promise<boolean> => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       this.users = [...this.users.slice(0, needUserIndex), ...this.users.slice(needUserIndex + 1)];
@@ -48,7 +48,7 @@ class AppData implements IAppData {
     return false;
   };
 
-  updateUser = (id: string, options: Partial<IUserData>): IUser | null => {
+  updateUser = async (id: string, options: Partial<IUserData>): Promise<IUser | null> => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       this.users = [

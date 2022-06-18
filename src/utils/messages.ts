@@ -10,7 +10,7 @@ export const INVALID_BODY_REQUEST_MESSAGE =
   'Invalid request. Body does not contain required fields';
 
 export const getNotFoundUserMessage = (id: string) => `User id-(${id}) not founded!`;
-export const getInvalidUserMessage = (id: string) => `User id-(${id}) is invalid!`;
+export const getInvalidUserMessage = (id: string) => `User id-(${id}) is invalid! Not uuid.`;
 
 export const SERVER_ERROR_BODY = {
   message: SERVER_ERROR_MESSAGE,

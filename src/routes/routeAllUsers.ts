@@ -6,6 +6,7 @@ import {
   INVALID_METHOD_MESSAGE,
   sendBody,
   sendErrorMessage,
+  SERVER_ERROR_BODY,
 } from '../utils/messages.js';
 import { checkDataUser } from '../utils/index.js';
 import { TMethodsRequest } from '../types/index.js';
@@ -22,8 +23,13 @@ const addNewUser = (req: IncomingMessage, res: ServerResponse): void => {
       const userInfo = checkDataUser(body);
 
       if (userInfo) {
-        const addingUser = AppData.createUser(userInfo);
-        sendBody(res, STATUS_CODES_APP.good, addingUser);
+        AppData.createUser(userInfo)
+          .then((addingUser) => {
+            sendBody(res, STATUS_CODES_APP.good, addingUser);
+          })
+          .catch(() => {
+            sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
+          });
       } else {
         throw new Error('');
       }
@@ -40,7 +46,8 @@ export const processingUsersRequest = async (
 ) => {
   switch (method) {
     case 'GET': {
-      sendBody(res, STATUS_CODES_APP.good, AppData.getUsers());
+      const users = await AppData.getUsers();
+      sendBody(res, STATUS_CODES_APP.good, users);
       break;
     }
     case 'POST': {

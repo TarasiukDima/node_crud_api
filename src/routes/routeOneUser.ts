@@ -11,6 +11,7 @@ import {
   sendErrorMessage,
   USER_DELETED_MESSAGE,
   INVALID_METHOD_MESSAGE,
+  SERVER_ERROR_BODY,
 } from '../utils/messages.js';
 import { IUser, IUserData, TMethodsRequest } from '../types/index.js';
 import { checkDataUser } from '../utils/index.js';
@@ -48,8 +49,13 @@ const updateUserInfo = (req: IncomingMessage, res: ServerResponse, userId: strin
           age: userInfo.age,
         };
 
-        const addingUser = AppData.updateUser(userId, options);
-        sendBody(res, STATUS_CODES_APP.good, addingUser as IUser);
+        AppData.updateUser(userId, options)
+          .then((addingUser) => {
+            sendBody(res, STATUS_CODES_APP.good, addingUser as IUser);
+          })
+          .catch(() => {
+            sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
+          });
       } else {
         throw new Error('');
       }
@@ -61,12 +67,17 @@ const updateUserInfo = (req: IncomingMessage, res: ServerResponse, userId: strin
 };
 
 const deleteUser = (res: ServerResponse, userId: string): void => {
-  const isUserDeleted = AppData.deleteUser(userId);
-  if (isUserDeleted) {
-    sendBody(res, STATUS_CODES_APP.delete, { message: USER_DELETED_MESSAGE });
-  } else {
-    sendErrorMessage(res, STATUS_CODES_APP.bad, getNotFoundUserMessage(userId));
-  }
+  AppData.deleteUser(userId)
+    .then((isUserDeleted) => {
+      if (isUserDeleted) {
+        sendBody(res, STATUS_CODES_APP.delete, { message: USER_DELETED_MESSAGE });
+      } else {
+        sendErrorMessage(res, STATUS_CODES_APP.bad, getNotFoundUserMessage(userId));
+      }
+    })
+    .catch(() => {
+      sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
+    });
 };
 
 export const processingOneUserRequest = async (
@@ -87,7 +98,7 @@ export const processingOneUserRequest = async (
     return;
   }
 
-  const needUser = AppData.getUser(userId);
+  const needUser = await AppData.getUser(userId);
 
   if (!needUser) {
     sendErrorMessage(res, STATUS_CODES_APP.bad, getNotFoundUserMessage(userId));
