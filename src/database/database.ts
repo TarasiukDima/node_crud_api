@@ -1,8 +1,14 @@
+import cluster from 'cluster';
 import { v4 as uuidv4 } from 'uuid';
-import { IUser, IUserData } from '../types/index.js';
+import { IUser, IUserData } from '../types/index';
 
-interface IAppData {
+export interface IAppData {
   users: Array<IUser>;
+  getUsers: () => Promise<Array<IUser>>;
+  getUser: (id: string) => Promise<IUser | null>;
+  createUser: (options: IUserData) => Promise<IUser>;
+  deleteUser: (id: string) => Promise<boolean>;
+  updateUser: (id: string, options: IUserData) => Promise<IUser | null>;
 }
 
 class AppData implements IAppData {
@@ -28,10 +34,12 @@ class AppData implements IAppData {
     return null;
   };
 
-  createUser = async (options: IUserData): Promise<IUser> => {
+  createUser = async ({ username, age, hobbies }: IUserData): Promise<IUser> => {
     const newUser = {
       id: uuidv4(),
-      ...options,
+      username,
+      age,
+      hobbies,
     };
 
     this.users.push(newUser);
@@ -48,14 +56,16 @@ class AppData implements IAppData {
     return false;
   };
 
-  updateUser = async (id: string, options: Partial<IUserData>): Promise<IUser | null> => {
+  updateUser = async (id: string, { username, age, hobbies }: IUserData): Promise<IUser | null> => {
     const needUserIndex = this.getUserIndex(id);
     if (needUserIndex > -1) {
       this.users = [
         ...this.users.slice(0, needUserIndex),
         {
           ...this.users[needUserIndex],
-          ...options,
+          username,
+          age,
+          hobbies,
         },
         ...this.users.slice(needUserIndex + 1),
       ];

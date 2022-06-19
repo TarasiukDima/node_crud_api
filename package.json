@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "start": "nodemon",
-    "build": "webpack --env production",
+    "start:dev": "nodemon",
+    "start:prod": "webpack --env production && node ./build/main.js",
+    "start:multi": "webpack --env production && cross-env MULTI_ENV=multi node ./build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/TarasiukDima/node_crud_api#readme",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "nodemon": "^2.0.16",
     "uuid": "^8.3.2"

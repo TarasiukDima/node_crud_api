@@ -1,7 +1,7 @@
-import AppData from '../database/database.js';
+import AppData from '../database/database';
 import { validate as uuidValidate, version as uuidVersion } from 'uuid';
 import { IncomingMessage, ServerResponse } from 'http';
-import { STATUS_CODES_APP } from '../settings.js';
+import { STATUS_CODES_APP } from '../settings';
 import {
   INVALID_BODY_REQUEST_MESSAGE,
   getInvalidUserMessage,
@@ -12,9 +12,9 @@ import {
   USER_DELETED_MESSAGE,
   INVALID_METHOD_MESSAGE,
   SERVER_ERROR_BODY,
-} from '../utils/messages.js';
-import { IUser, IUserData, TMethodsRequest } from '../types/index.js';
-import { checkDataUser } from '../utils/index.js';
+} from '../utils/messages';
+import { IUser, IUserData, TMethodsRequest } from '../types/index';
+import { checkDataUser, getBodyFromData } from '../utils/index';
 
 const checkIdUserUrl = (url: string): string | null => {
   const userId = url.split('/');
@@ -31,39 +31,36 @@ const validateUserId = (userId: string): boolean => {
   return uuidValidate(userId) && uuidVersion(userId) === 4;
 };
 
-const updateUserInfo = (req: IncomingMessage, res: ServerResponse, userId: string): void => {
-  let body = '';
+const updateUserInfo = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+  userId: string
+): Promise<void> => {
+  try {
+    const body = await getBodyFromData(req);
+    const userInfo = checkDataUser(body);
 
-  req.on('data', (chunk) => {
-    body += chunk;
-  });
+    if (userInfo) {
+      const options: IUserData = {
+        username: userInfo.username,
+        hobbies: userInfo.hobbies,
+        age: userInfo.age,
+      };
 
-  req.on('end', () => {
-    try {
-      const userInfo = checkDataUser(body);
-
-      if (userInfo) {
-        const options: IUserData = {
-          username: userInfo.username,
-          hobbies: userInfo.hobbies,
-          age: userInfo.age,
-        };
-
-        AppData.updateUser(userId, options)
-          .then((addingUser) => {
-            sendBody(res, STATUS_CODES_APP.good, addingUser as IUser);
-          })
-          .catch(() => {
-            sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
-          });
-      } else {
-        throw new Error('');
-      }
-    } catch (_) {
-      sendErrorMessage(res, STATUS_CODES_APP.invalid, INVALID_BODY_REQUEST_MESSAGE);
+      AppData.updateUser(userId, options)
+        .then((addingUser) => {
+          sendBody(res, STATUS_CODES_APP.good, addingUser as IUser);
+        })
+        .catch(() => {
+          sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);
+        });
+    } else {
+      throw new Error('');
     }
-    return;
-  });
+  } catch (_) {
+    sendErrorMessage(res, STATUS_CODES_APP.invalid, INVALID_BODY_REQUEST_MESSAGE);
+  }
+  return;
 };
 
 const deleteUser = (res: ServerResponse, userId: string): void => {

@@ -1,15 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { processingUsersRequest } from './routeAllUsers.js';
-import { processingOneUserRequest } from './routeOneUser.js';
-import { getUrlWithoutPart } from '../utils/index.js';
-import { TMethodsRequest } from '../types/index.js';
-import { START_URL, STATUS_CODES_APP, URL_USERS } from '../settings.js';
+import { processingUsersRequest } from './routeAllUsers';
+import { processingOneUserRequest } from './routeOneUser';
+import { getUrlWithoutPart } from '../utils/index';
+import { TMethodsRequest } from '../types/index';
+import { START_URL, STATUS_CODES_APP, URL_USERS } from '../settings';
 import {
   NOT_FOUND_MESSAGE,
   sendBody,
   sendErrorMessage,
   SERVER_ERROR_BODY,
-} from '../utils/messages.js';
+} from '../utils/messages';
 
 const returnUrlWithoutStart = (url: string, startPart: string) => {
   if (!url?.startsWith(startPart)) {
@@ -36,6 +36,7 @@ export const processingRequest = async (
   const method: TMethodsRequest = (req.method as TMethodsRequest) || 'GET';
 
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Pid', process.pid);
 
   try {
     if (urlPoint === null) {

@@ -1,5 +1,5 @@
 import { ServerResponse } from 'http';
-import { STATUS_CODES_APP } from '../settings.js';
+import { STATUS_CODES_APP } from '../settings';
 
 export const SERVER_ERROR_MESSAGE = 'Server error!';
 export const NOT_FOUND_MESSAGE = 'Not Founded!';
