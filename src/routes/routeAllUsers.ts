@@ -19,7 +19,7 @@ const addNewUser = async (req: IncomingMessage, res: ServerResponse): Promise<vo
     if (userInfo) {
       AppData.createUser(userInfo)
         .then((addingUser) => {
-          sendBody(res, STATUS_CODES_APP.good, addingUser);
+          sendBody(res, STATUS_CODES_APP.add, addingUser);
         })
         .catch(() => {
           sendBody(res, STATUS_CODES_APP.serverError, SERVER_ERROR_BODY);

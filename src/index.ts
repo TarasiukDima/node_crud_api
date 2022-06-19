@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import { createServer } from 'http';
+import { createServer, Server } from 'http';
 import { processingRequest } from './routes/routes';
 import { cpus } from 'os';
 import cluster from 'cluster';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3030;
 
-const addNewServer = (idWorker?: number): void => {
+export const addNewServer = (idWorker?: number, port?: string | number): Server => {
   const server = createServer((req, res) => {
     if (idWorker) {
       console.log(`Process pid: ${process.pid}; worker pid: ${idWorker}`);
@@ -15,11 +15,13 @@ const addNewServer = (idWorker?: number): void => {
     processingRequest(req, res);
   });
 
-  server.listen(PORT, () => {});
+  server.listen(port || PORT, () => {});
 
   server.on('error', (error) => {
     console.log(error);
   });
+
+  return server;
 };
 
 const addWorker = (): void => {
