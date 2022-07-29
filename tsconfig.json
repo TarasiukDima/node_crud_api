@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "Node16",
+    "target": "ES2016",
+    "esModuleInterop": true,
+    "outDir": "./build",
+    "baseUrl": ".",
+    "moduleResolution": "Node",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+  },
+  "exclude": ["node_modules", "./build"],
+  "include": ["./src"],
+  "ts-node": {
+    "esm": true
+  }
+}
